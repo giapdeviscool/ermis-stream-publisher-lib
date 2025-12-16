@@ -1,0 +1,17 @@
+{
+  "cxxNamespace": ["ermisstreampublisherlib"],
+  "ios": {
+    "iosModuleName": "ErmisStreamPublisherLib"
+  },
+  "android": {
+    "androidNamespace": ["ermisstreampublisherlib"],
+    "androidCxxLibName": "ermisstreampublisherlib"
+  },
+  "autolinking": {
+    "ErmisStreamPublisherLib": {
+      "swift": "ErmisStreamPublisherLib",
+      "kotlin": "ErmisStreamPublisherLib"
+    }
+  },
+  "ignorePaths": ["node_modules"]
+}
