@@ -21,9 +21,12 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-jsi'
   s.dependency 'React-callinvoker'
-
-  load 'nitrogen/generated/ios/ErmisStreamPublisherLib+autolinking.rb'
-  add_nitrogen_files(s)
+  s.dependency 'HaishinKit', '~> 1.5.4'
+  nitrogen_autolinking = File.join(__dir__, 'nitrogen/generated/ios/ErmisStreamPublisherLib+autolinking.rb')
+  if File.exist?(nitrogen_autolinking)
+    load nitrogen_autolinking
+    add_nitrogen_files(s)
+  end
 
   install_modules_dependencies(s)
 end

@@ -11,6 +11,10 @@
     "ErmisStreamPublisherLib": {
       "swift": "ErmisStreamPublisherLib",
       "kotlin": "ErmisStreamPublisherLib"
+    },
+    "ErmisStreamPublisherView": {
+      "swift": "ErmisStreamPublisherView",
+      "kotlin": "ErmisStreamPublisherView"
     }
   },
   "ignorePaths": ["node_modules"]

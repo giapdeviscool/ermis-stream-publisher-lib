@@ -1,5 +1,8 @@
 package ermisstreampublisherlib.example
 
+import android.Manifest
+import android.os.Bundle
+import androidx.core.app.ActivityCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -17,6 +20,17 @@ class MainActivity : ReactActivity() {
    * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
    * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
    */
-  override fun createReactActivityDelegate(): ReactActivityDelegate =
-      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+  override fun createReactActivityDelegate(): ReactActivityDelegate = DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    
+    // Request camera and microphone permissions
+    ActivityCompat.requestPermissions(
+      this, arrayOf(
+          Manifest.permission.CAMERA,
+          Manifest.permission.RECORD_AUDIO
+      ), 1
+    )
+  }
 }
