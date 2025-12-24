@@ -1,9 +1,10 @@
 import { getHostComponent } from 'react-native-nitro-modules';
-import ErmisStreamPublisherViewConfig from '../../nitrogen/generated/shared/json/ErmisStreamPublisherViewConfig.json';
 import type {
   ErmisStreamPublisherViewMethods,
   ErmisStreamPublisherViewProps,
 } from '../ErmisStreamPublisherView.nitro';
+
+const ErmisStreamPublisherViewConfig = require('../../nitrogen/generated/shared/json/ErmisStreamPublisherViewConfig.json');
 
 const ErmisStreamPublisherView = getHostComponent<
   ErmisStreamPublisherViewProps,
