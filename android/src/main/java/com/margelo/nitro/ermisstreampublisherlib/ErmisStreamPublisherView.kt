@@ -26,12 +26,13 @@ class ErmisStreamPublisherView(context: ThemedReactContext) : HybridErmisStreamP
         // Lưu trữ cấu hình tĩnh để Module có thể truy cập
         var currentRtmpUrl: String = ""
         var currentStreamKey: String = ""
-        var currentFrameRate: Int = 30
+        var currentFrameRate: Int = 60
         var currentVideoBitrate: Int = 2500 * 1000 // bps
         var currentAudioBitrate: Int = 160 * 1024 // bps
     }
 
     private var ermisview: OpenGlView
+
     override val view: View
 
     // --- Cập nhật giá trị từ React Native ---
