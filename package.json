@@ -172,7 +172,6 @@
     "version": "0.56.0"
   },
   "dependencies": {
-    "@api.video/react-native-livestream": "2.0.1",
     "axios": "^1.13.2"
   }
 }
