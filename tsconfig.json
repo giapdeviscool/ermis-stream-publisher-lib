@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    "baseUrl": ".",
     "paths": {
-      "ermis-stream-publisher-lib": ["./src/index"]
+      "ermis-stream-publisher-lib": ["./src/index"],
+      "@generated/*": ["nitrogen/generated/*"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

@@ -4,7 +4,7 @@ import type {
   ErmisStreamPublisherViewProps,
 } from '../ErmisStreamPublisherView.nitro';
 
-const ErmisStreamPublisherViewConfig = require('../../nitrogen/generated/shared/json/ErmisStreamPublisherViewConfig.json');
+const ErmisStreamPublisherViewConfig = require('@generated/shared/json/ErmisStreamPublisherViewConfig.json');
 
 const ErmisStreamPublisherView = getHostComponent<
   ErmisStreamPublisherViewProps,
