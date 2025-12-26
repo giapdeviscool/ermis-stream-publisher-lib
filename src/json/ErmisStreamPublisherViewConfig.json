@@ -1,0 +1,15 @@
+{
+  "uiViewClassName": "ErmisStreamPublisherView",
+  "supportsRawText": false,
+  "bubblingEventTypes": {},
+  "directEventTypes": {},
+  "validAttributes": {
+    "rtmpUrl": true,
+    "streamKey": true,
+    "frameRate": true,
+    "audioBitrate": true,
+    "videoBitrate": true,
+    "videoCodec": true,
+    "hybridRef": true
+  }
+}
