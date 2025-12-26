@@ -4,7 +4,6 @@
     "baseUrl": ".",
     "paths": {
       "ermis-stream-publisher-lib": ["./src/index"],
-      "@generated/*": ["nitrogen/generated/*"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
