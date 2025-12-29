@@ -25,8 +25,8 @@ class ErmisStreamPublisherLib : HybridErmisStreamPublisherLibSpec() {
         val key = ErmisStreamPublisherView.currentStreamKey
 
         // Chuẩn bị Video/Audio với thông số động
-        // Ở đây tạm để mặc định 1280x720, bạn có thể truyền thêm width/height từ RN nếu cần
-        val videoReady = camera.prepareVideo(1280, 720, fps, videoBitrate, 2, 90)
+        // Ở đây tạm để mặc định 1920x1080 (16:9), bạn có thể truyền thêm width/height từ RN nếu cần
+        val videoReady = camera.prepareVideo(1920, 1080, fps, videoBitrate, 2, 90)
         val audioReady = camera.prepareAudio(audioBitrate, 48000, true)
 
         if (videoReady && audioReady) {

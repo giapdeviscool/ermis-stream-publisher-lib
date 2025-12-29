@@ -22,6 +22,12 @@ class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
     ErmisStreamPublisherLib.stream!.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)) { error in
       print(error)
     }
+    // Set video resolution to 1920x1080 (16:9)
+    if let videoSettings = ErmisStreamPublisherLib.stream?.videoSettings {
+      var settings = videoSettings
+      settings.videoSize = VideoSize(width: 1920, height: 1080)
+      ErmisStreamPublisherLib.stream?.videoSettings = settings
+    }
     print("Camera đã được cấu hình và kích hoạt thành công.")
   }
   

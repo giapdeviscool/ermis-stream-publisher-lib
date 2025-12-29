@@ -37,7 +37,7 @@ export default function App() {
           marginTop: 50,
         }}
         frameRate={60}
-        videoBitrate={2500}
+        videoBitrate={2500000}
         videoCodec={true}
         audioBitrate={160}
       />
