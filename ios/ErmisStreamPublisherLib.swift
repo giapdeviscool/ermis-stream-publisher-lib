@@ -5,13 +5,13 @@ class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
   
   
   private let session = AVAudioSession.sharedInstance()
-  private let connection : RTMPConnection
+  private var connection : RTMPConnection?
   public static var stream : RTMPStream?
   public static var rtmpUrl : String?
   public static var streamKey : String?
   override init() {
     self.connection = RTMPConnection()
-    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection)
+    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection!)
     super.init()
     setupAudio()
   }
@@ -43,19 +43,30 @@ class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
   
   
   func startStream() throws {
+    // Tạo connection mới nếu cũ đã bị close
+    connection = RTMPConnection()
+    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection!)
     setupStream()
     ErmisStreamPublisherView.hkview?.attachStream(ErmisStreamPublisherLib.stream!)
-    connection.connect(ErmisStreamPublisherLib.rtmpUrl!)
+    connection?.connect(ErmisStreamPublisherLib.rtmpUrl!)
     ErmisStreamPublisherLib.stream?.publish(ErmisStreamPublisherLib.streamKey!)
     
   }
   
   func stopStream() throws {
-    ErmisStreamPublisherLib.stream?.close()
-    connection.close()
+    // Detach preview và dừng session của view
     ErmisStreamPublisherView.hkview?.attachStream(nil)
+    // Detach camera và mic để giải phóng thiết bị
+    ErmisStreamPublisherLib.stream?.attachCamera(nil)
+    ErmisStreamPublisherLib.stream?.attachAudio(nil)
+    // Đóng stream và connection
+    ErmisStreamPublisherLib.stream?.close()
+    connection?.close()
+    // Tuỳ chọn: tắt AVAudioSession nếu muốn nhả route audio hoàn toàn
+    try? session.setActive(false, options: .notifyOthersOnDeactivation)
+    // Xoá stream hiện tại, connection sẽ được tạo mới khi gọi startStream lần tiếp theo
     ErmisStreamPublisherLib.stream = nil
-    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection)
+    connection = nil
   }
   
   func flipCamera(position: Bool) throws {
