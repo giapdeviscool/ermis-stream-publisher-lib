@@ -6,6 +6,7 @@ class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
   
   private let session = AVAudioSession.sharedInstance()
   private var connection : RTMPConnection?
+  private var isConnected = false
   public static var stream : RTMPStream?
   public static var rtmpUrl : String?
   public static var streamKey : String?
@@ -48,28 +49,45 @@ class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
     ErmisStreamPublisherLib.stream = RTMPStream(connection: connection!)
     setupStream()
     ErmisStreamPublisherView.hkview?.attachStream(ErmisStreamPublisherLib.stream!)
+    
+  
     connection?.connect(ErmisStreamPublisherLib.rtmpUrl!)
     ErmisStreamPublisherLib.stream?.publish(ErmisStreamPublisherLib.streamKey!)
     
   }
   
   func stopStream() throws {
-    // Detach preview và dừng session của view
-    ErmisStreamPublisherView.hkview?.attachStream(nil)
-    // Detach camera và mic để giải phóng thiết bị
-    ErmisStreamPublisherLib.stream?.attachCamera(nil)
-    ErmisStreamPublisherLib.stream?.attachAudio(nil)
-    // Đóng stream và connection
-    ErmisStreamPublisherLib.stream?.close()
-    connection?.close()
-    // Tuỳ chọn: tắt AVAudioSession nếu muốn nhả route audio hoàn toàn
-    try? session.setActive(false, options: .notifyOthersOnDeactivation)
-    // Xoá stream hiện tại, connection sẽ được tạo mới khi gọi startStream lần tiếp theo
-    ErmisStreamPublisherLib.stream = nil
-    connection = nil
+      guard let stream = ErmisStreamPublisherLib.stream,
+            let connection = self.connection else {
+          print("Stream hoặc connection đã nil rồi")
+          return
+      }
+      
+      // 1. Detach preview trước
+      ErmisStreamPublisherView.hkview?.attachStream(nil)
+      
+      // 2. Detach devices
+      stream.attachCamera(nil)
+      stream.attachAudio(nil)
+      
+      // 3. Unpublish stream (quan trọng!)
+      stream.close()
+      
+      // 4. Đóng connection
+      connection.close()
+      
+      // 5. Tắt audio session
+      try? session.setActive(false, options: .notifyOthersOnDeactivation)
+      
+      // 6. Set nil
+      ErmisStreamPublisherLib.stream = nil
+      self.connection = nil
+      
+      print("Stream đã dừng hoàn toàn")
   }
   
   func flipCamera(position: Bool) throws {
+    print("stream conencted ?: ",connection!.connected)
     if position == true {
       ErmisStreamPublisherLib.stream!.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)) { error in
         print(error)

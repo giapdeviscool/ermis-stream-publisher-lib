@@ -29,7 +29,7 @@ export default function App() {
     <View style={styles.container}>
       <ErmisStreamPublisherView
         rtmpUrl="rtmps://streaming.ermis.network:1939/Ermis-streaming"
-        streamKey="31428e22-a37b-44bd-aa8f-f4499fa07e8d:b85193223e19025a"
+        streamKey="019b914f-40a9-78b0-9b74-3d8485e18c20:13f9fe8f06678640"
         style={{
           width: '98%',
           height: '50%',
