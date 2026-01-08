@@ -1,18 +1,18 @@
 import HaishinKit
 import AVFoundation
-
+import Logboard
+import AVKit
+import VideoToolbox
 class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
   
   
   private let session = AVAudioSession.sharedInstance()
-  private var connection : RTMPConnection?
+  private var connection = RTMPConnection()
   private var isConnected = false
   public static var stream : RTMPStream?
   public static var rtmpUrl : String?
   public static var streamKey : String?
   override init() {
-    self.connection = RTMPConnection()
-    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection!)
     super.init()
     setupAudio()
   }
@@ -44,50 +44,84 @@ class ErmisStreamPublisherLib: HybridErmisStreamPublisherLibSpec {
   
   
   func startStream() throws {
-    // Tạo connection mới nếu cũ đã bị close
-    connection = RTMPConnection()
-    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection!)
+    // Remove listener cũ nếu có
+    connection.removeEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
+    
+    // Tạo connection MỚI - QUAN TRỌNG: RTMPConnection không thể reuse sau khi close
+    if connection.connected == false {
+      connection = RTMPConnection()
+      connection.connect(ErmisStreamPublisherLib.rtmpUrl!)
+    }
+    
+    ErmisStreamPublisherLib.stream = RTMPStream(connection: connection)
+    
+    connection.addEventListener(.rtmpStatus, selector: #selector(rtmpStatusHandler), observer: self)
     setupStream()
     ErmisStreamPublisherView.hkview?.attachStream(ErmisStreamPublisherLib.stream!)
     
-  
-    connection?.connect(ErmisStreamPublisherLib.rtmpUrl!)
-    ErmisStreamPublisherLib.stream?.publish(ErmisStreamPublisherLib.streamKey!)
-    
+    ErmisStreamPublisherLib.stream?.publish(ErmisStreamPublisherLib.streamKey)
   }
   
   func stopStream() throws {
-      guard let stream = ErmisStreamPublisherLib.stream,
-            let connection = self.connection else {
-          print("Stream hoặc connection đã nil rồi")
+    ErmisStreamPublisherView.hkview?.attachStream(nil)
+    Task {  // Đảm bảo chạy trên Main Thread để update UI an toàn
+            print("🛑 Bắt đầu dừng stream...")
+
+            guard let stream = ErmisStreamPublisherLib.stream else { return }
+
+            // 1. Ngắt thiết bị (Video/Audio)
+            stream.attachCamera(nil)
+            stream.attachAudio(nil)
+
+            // 3. Delay để event listener kịp bắn
+            try? await Task.sleep(nanoseconds: 200 * 1_000_000)
+
+            // 4. Đóng connection (handler sẽ được gọi khi connection đóng)
+            print("Đang đóng socket...")
+            
+     
+            connection.close()
+            
+            // 5. Cleanup - không remove listener trong stopStream, để nó bắn event
+            try? self.session.setActive(false)
+            
+            print("✅ Đã hoàn tất lệnh dừng.")
+        }
+    
+  }
+  
+  @objc private func rtmpStatusHandler(_ notification: Notification) {
+      print("📢 rtmpStatusHandler called")
+      let e = Event.from(notification)
+      guard let data: ASObject = e.data as? ASObject, let code: String = data["code"] as? String else {
+          print("⚠️ Cannot extract data or code from event")
           return
       }
       
-      // 1. Detach preview trước
-      ErmisStreamPublisherView.hkview?.attachStream(nil)
+      print("📡 Received code: \(code)")
       
-      // 2. Detach devices
-      stream.attachCamera(nil)
-      stream.attachAudio(nil)
-      
-      // 3. Unpublish stream (quan trọng!)
-      stream.close()
-      
-      // 4. Đóng connection
-      connection.close()
-      
-      // 5. Tắt audio session
-      try? session.setActive(false, options: .notifyOthersOnDeactivation)
-      
-      // 6. Set nil
-      ErmisStreamPublisherLib.stream = nil
-      self.connection = nil
-      
-      print("Stream đã dừng hoàn toàn")
+      // Kiểm tra code
+      switch code {
+      case RTMPConnection.Code.connectClosed.rawValue:
+          print("🔴 Đã ngắt kết nối (Log: NetConnection.Connect.Closed)")
+          // Emit event to React Native
+      case RTMPConnection.Code.connectSuccess.rawValue:
+          print("🟢 Kết nối thành công")
+          // Emit success event to React Native
+      default:
+          print(code)
+          // Check if it's a connection error
+          if code.contains("error") || code.contains("Error") || code.contains("failed") {
+            
+          }
+          break
+      }
   }
   
   func flipCamera(position: Bool) throws {
-    print("stream conencted ?: ",connection!.connected)
+    print("stream conencted ?: ",connection.connected)
+    ErmisStreamPublisherLib.stream?.send(handlerName: "DeleteStream", arguments: "please delete Stream")
+
     if position == true {
       ErmisStreamPublisherLib.stream!.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)) { error in
         print(error)
