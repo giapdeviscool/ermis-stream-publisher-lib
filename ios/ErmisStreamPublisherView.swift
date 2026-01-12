@@ -26,19 +26,19 @@ class ErmisStreamPublisherView : HybridErmisStreamPublisherViewSpec {
   
       var frameRate: Double? = 0 {
         didSet {
-          ErmisStreamPublisherLib.stream?.frameRate = frameRate!
+          ErmisStreamPublisherLib.frameRate = frameRate!
         }
       }
       
       var audioBitrate: Double? = 0 {
         didSet {
-          ErmisStreamPublisherLib.stream?.audioSettings.bitRate = Int(audioBitrate!)
+            ErmisStreamPublisherLib.audioBitrate = Int(audioBitrate!)
         }
       }
       
       var videoBitrate: Double? = 0 {
         didSet {
-          ErmisStreamPublisherLib.stream?.videoSettings.bitRate = UInt32(videoBitrate!)
+          ErmisStreamPublisherLib.videoBitrate = UInt32(videoBitrate!)
         }
       }
       
